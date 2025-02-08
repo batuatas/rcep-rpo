@@ -18,7 +18,7 @@ save_path = os.path.expanduser("~/Desktop/Research Internship/lp-portfolio-optim
 tickers = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA']
 
 # Download historical stock data
-data = yf.download(tickers, start="2024-01-01", end="2025-01-01", interval="1mo")
+data = yf.download(tickers, start="2024-01-01", end="2025-01-01", interval="3mo")
 
 # Ensure correct price column
 if 'Adj Close' in data.columns:
