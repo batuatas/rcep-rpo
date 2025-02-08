@@ -10,3 +10,4 @@ import numpy
 import time
 
 print("a")
+print("b")
