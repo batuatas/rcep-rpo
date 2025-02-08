@@ -7,3 +7,6 @@ Created on Sat Feb  8 20:52:55 2025
 """
 
 import numpy
+import time
+
+print("a")
