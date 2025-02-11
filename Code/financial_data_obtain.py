@@ -23,7 +23,7 @@ assets = [
 ]
 
 # Download historical data from 2024-01-01 to 2024-12-31
-data = yf.download(assets, start="2024-01-01", end="2024-12-31", interval="3mo")
+data = yf.download(assets, start="2024-01-01", end="2024-12-31", interval="1d")
 
 # Ensure correct price column
 if 'Adj Close' in data.columns:

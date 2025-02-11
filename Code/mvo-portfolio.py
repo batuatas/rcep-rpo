@@ -25,7 +25,8 @@ n_assets = len(expected_returns)
 weights = cp.Variable(n_assets)
 
 # Define the target return (e.g., 0.01 for 1%)
-target_return = 0.1
+target_return = returns.mean().mean()
+
 
 # Define the objective function (minimize portfolio variance)
 objective = cp.Minimize(cp.quad_form(weights, cov_matrix))

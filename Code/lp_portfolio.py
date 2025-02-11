@@ -6,6 +6,14 @@ Created on Sat Feb  8 20:52:55 2025
 @author: batuhanatas
 """
 
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Feb  8 20:52:55 2025
+
+@author: batuhanatas
+"""
+
 import pandas as pd
 from pulp import LpProblem, LpMinimize, LpVariable, lpSum
 
@@ -18,42 +26,38 @@ assets = returns.columns
 n_assets = len(assets)
 n_scenarios = len(returns)
 
-# Calculate expected returns and volatility
+# Calculate expected returns
 expected_returns = returns.mean()
-volatility = returns.std()
 
-# Set confidence level for CVaR (95% confidence)
-alpha = 0.95
-
-# Define the LP Model
-model = LpProblem("CVaR_Portfolio_Optimization", LpMinimize)
+# Define the MAD LP Model
+model = LpProblem("MAD_Portfolio_Optimization", LpMinimize)
 
 # Define portfolio weight variables
 x = {asset: LpVariable(f"x_{asset}", lowBound=0) for asset in assets}
 
-# Define VaR (V) and deviation variables (z_t)
-V = LpVariable("VaR")
-z = {t: LpVariable(f"z_{t}", lowBound=0) for t in range(n_scenarios)}
+# Define deviation variables
+d_plus = {t: LpVariable(f"d_plus_{t}", lowBound=0) for t in range(n_scenarios)}
+d_minus = {t: LpVariable(f"d_minus_{t}", lowBound=0) for t in range(n_scenarios)}
 
-# Objective Function: Minimize CVaR (VaR + tail risk penalty)
-model += V + (1 / ((1 - alpha) * n_scenarios)) * lpSum(z[t] for t in range(n_scenarios))
+# Objective Function: Minimize Mean Absolute Deviation (MAD)
+model += lpSum((d_plus[t] + d_minus[t]) / n_scenarios for t in range(n_scenarios))
 
 # Constraint: Portfolio weights sum to 1
 model += lpSum(x[asset] for asset in assets) == 1
 
-# CVaR Risk Constraints
+# Constraints for MAD deviation calculations
 for t in range(n_scenarios):
-    model += z[t] >= -lpSum(returns.iloc[t, j] * x[assets[j]] for j in range(n_assets)) - V
+    model += d_plus[t] - d_minus[t] == lpSum(returns.iloc[t, j] * x[assets[j]] for j in range(n_assets)) - lpSum(expected_returns[j] * x[assets[j]] for j in range(n_assets))
+
+# Risk-Return Tradeoff: Require Minimum Expected Portfolio Return
+required_return = expected_returns.mean() * 1.1  # Adjust this factor to set return targets
+model += lpSum(expected_returns[stock] * x[stock] for stock in assets) >= required_return
 
 # Diversification Constraints
-max_weight = 0.05 # No single asset > 20%
+max_weight = 0.20  # No single asset > 20%
 
 for asset in assets:
     model += x[asset] <= max_weight
-
-# Risk-Adjusted Target Return Constraint
-adjusted_target_return = expected_returns.mean() / (1 + volatility.mean())
-model += lpSum(expected_returns[stock] * x[stock] for stock in assets) >= adjusted_target_return
 
 # Solve the model
 model.solve()
@@ -63,5 +67,5 @@ optimal_weights = {asset: x[asset].varValue for asset in assets}
 weights_df = pd.DataFrame(list(optimal_weights.items()), columns=["Asset", "Optimal Weight"])
 
 # Print results
-print("Optimal Portfolio Allocation (CVaR Optimization with Diversification):")
+print("Optimal Portfolio Allocation (MAD Optimization with Risk-Return Tradeoff):")
 print(weights_df)
