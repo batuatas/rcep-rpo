@@ -13,7 +13,7 @@ import os
 save_path = os.path.expanduser("~/Desktop/Research Internship/lp-portfolio-optimization/Data/")
 returns = pd.read_csv(os.path.join(save_path, "returns_data.csv"), index_col=0)
 
-# Load the unified target return
+# Load the target return
 with open(os.path.join(save_path, "target_return.txt"), "r") as f:
     target_return = float(f.read().strip())
 
