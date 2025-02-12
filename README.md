@@ -17,6 +17,7 @@ This script downloads historical price data for selected assets and prepares the
   - Fetch stock prices (`Adj Close` or `Close` values)
   - Compute daily/monthly returns
   - Handle missing data (forward-fill, drop NaN)
+  - Compute **target return** (saved in `target_return.txt`)
  
 ### **2️⃣ lp_portfolio.py** (Mean Absolute Deviation Model)
 This script formulates and solves the **LP-based MAD portfolio optimization**:
@@ -26,7 +27,9 @@ This script formulates and solves the **LP-based MAD portfolio optimization**:
   - **Diversification constraints** (no asset > 20%)
   - **Minimum target return**
 - **Solver:** Uses `PuLP` (Linear Programming Solver).
-- **Output:** Optimal portfolio weights printed & saved as a CSV.
+- **Output:** Optimal portfolio weights are:
+  - **Printed in the terminal**
+  - **Saved in `Data/lp_optimal_weights.csv`**
 
 ### **3️⃣ mvo_portfolio.py** (Mean-Variance Optimization Model)
 This script implements the classical **Mean-Variance Optimization (MVO)** approach:
@@ -35,4 +38,7 @@ This script implements the classical **Mean-Variance Optimization (MVO)** approa
   - Portfolio weights sum to **1**
   - No short-selling (weights ≥ 0)
 - **Solver:** Uses `cvxpy` for quadratic programming.
-- **Output:** Optimal portfolio weights printed & saved as a CSV.
+- **Output:** Optimal portfolio weights are:
+  - **Printed in the terminal**
+  - **Saved in `Data/mvo_optimal_weights.csv`**
+
