@@ -1,58 +1,55 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue Feb 11 11:18:55 2025
-
-@author: batuhanatas
+Mean-Variance Optimization using Quadratic Programming
+Author: Batuhan Atas
 """
 
-import numpy as np
 import pandas as pd
 import cvxpy as cp
+import os
 
 # Load the returns data
-save_path = "~/Desktop/Research Internship/lp-portfolio-optimization/Data/returns_data.csv"
-returns = pd.read_csv(save_path, index_col=0)
+save_path = os.path.expanduser("~/Desktop/Research Internship/lp-portfolio-optimization/Data/")
+returns = pd.read_csv(os.path.join(save_path, "returns_data.csv"), index_col=0)
+
+# Load the unified target return
+with open(os.path.join(save_path, "target_return.txt"), "r") as f:
+    target_return = float(f.read().strip())
 
 # Calculate expected returns and the covariance matrix
 expected_returns = returns.mean().values
 cov_matrix = returns.cov().values
-
-# Number of assets
 n_assets = len(expected_returns)
 
-# Define the optimization variables
+# Define decision variables
 weights = cp.Variable(n_assets)
 
-# Define the target return (e.g., 0.01 for 1%)
-target_return = returns.mean().mean()
-
-
-# Define the objective function (minimize portfolio variance)
+# Define the objective function: Minimize portfolio variance
 objective = cp.Minimize(cp.quad_form(weights, cov_matrix))
 
-# Define the constraints
+# Constraints
 constraints = [
-    cp.sum(weights) == 1,  # Sum of weights must be 1
-    weights >= 0,          # No short-selling
-    expected_returns @ weights >= target_return  # Target return constraint
+    cp.sum(weights) == 1,  # Portfolio must be fully invested
+    weights >= 0,  # No short-selling
+    expected_returns @ weights >= target_return  # Use the same target return as MAD model
 ]
 
-# Formulate the problem
+# Formulate and solve the problem
 problem = cp.Problem(objective, constraints)
-
-# Solve the problem
 problem.solve()
 
 # Retrieve the optimal weights
 optimal_weights = weights.value
 
-# Create a DataFrame for better visualization
+# Save results as a DataFrame
 weights_df = pd.DataFrame({
     'Asset': returns.columns,
     'Optimal Weight': optimal_weights
 })
 
-# Display the optimal weights
-print("Optimal Portfolio Allocation (Mean-Variance Optimization):")
+# Save results to CSV
+weights_df.to_csv(os.path.join(save_path, "mvo_optimal_weights.csv"), index=False)
+
+print(f"✅ MVO Optimization Completed. Target Return: {target_return:.6f}")
 print(weights_df)
