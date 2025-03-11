@@ -80,7 +80,7 @@ Implements **Markowitz Mean-Variance Optimization (MVO)** using **Quadratic Prog
 ## 🛡️ Robust Portfolio Optimization
 
 ### Robust Portfolio Model - `robust_portfolio.py`
-Implements **Robust Portfolio Optimization** via **Second-Order Cone Programming (SOCP)** with **Mosek Fusion API**.
+Implements **Robust Portfolio Optimization** via **Second-Order Cone Programming (SOCP)** with **Mosek Open-Source Solver**.
 
 - **Objective**:  
   Considering the **worst-case scenario** in portfolio optimization with parameters:
