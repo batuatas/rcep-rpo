@@ -1,45 +1,90 @@
-# LP Portfolio Optimization
+# 📈 Explainable Portfolio Optimization
 
-## Overview
-This repository provides an implementation of **Portfolio Optimization** using two different approaches:
-1. **Mean Absolute Deviation (MAD) Model** (implemented in `lp_portfolio.py`) as a LP Model
-2. **Mean-Variance Optimization (MVO) Model** (implemented in `mvo_portfolio.py`) as a quadratic model offered by Markovitz
+This repository provides multiple implementations of **Portfolio Optimization** models, with a focus on **interpretability**, **risk management**, and **robustness**. It includes both **classic linear models** and **robust optimization** techniques, along with **parameter analysis** for deeper insights into model behavior.
 
-Additionally, the repository includes a script (`financial_data_obtain.py`) for fetching and preparing financial data from Yahoo Finance.
+---
 
+## 🗂️ Table of Contents
+1. [Overview](#overview)
+2. [Linear Portfolio Trials](#linear-portfolio-trials)
+   - [Mean Absolute Deviation (MAD)](#1️⃣-mad-model---lp_portfoliopy)
+   - [Mean-Variance Optimization (MVO)](#2️⃣-mvo-model---mvo_portfoliopy)
+3. [Robust Portfolio Optimization](#robust-portfolio-optimization)
+   - [Lambda-Kappa Parameter Analysis](#lambda-kappa-parameter-analysis)
+4. [Data Files](#data-files)
+5. [How to Run](#how-to-run)
+6. [Dependencies](#dependencies)
+7. [Folder Structure](#folder-structure)
+8. [Conclusion](#conclusion)
 
-## 📌 Scripts and Their Functions
+---
 
-### **1️⃣ financial_data_obtain.py** (Financial Data Collection)
-This script downloads historical price data for selected assets and prepares the dataset for portfolio optimization.
-- **Sources:** Uses `yfinance` to fetch stock, bond, ETF, and commodity prices.
-- **Output:** Saves cleaned data (prices, returns) in the `Data/` folder.
-- **Key Functions:**
-  - Fetch stock prices (`Adj Close` or `Close` values)
-  - Compute daily/monthly returns
-  - Handle missing data (forward-fill, drop NaN)
-  - Compute **target return** (saved in `target_return.txt`)
+## 📖 Overview
 
-### **2️⃣ lp_portfolio.py** (Mean Absolute Deviation Model)
-This script formulates and solves the **LP-based MAD portfolio optimization**:
-- **Objective:** Minimize portfolio risk measured by mean absolute deviation.
-- **Constraints:**
-  - Portfolio weights sum to **1**
-  - **Diversification constraints** (no asset > 20%)
-  - **Minimum target return (same as MVO)**
-- **Solver:** Uses `PuLP` (Linear Programming Solver).
-- **Output:** Optimal portfolio weights are:
-  - **Printed in the terminal**
-  - **Saved in `Data/lp_optimal_weights.csv`**
+This projects' aim is **Explainable Portfolio Optimization**, several approaches are tried:
+1. **Mean Absolute Deviation (MAD)**: Linear programming approach.
+2. **Mean-Variance Optimization (MVO)**: Quadratic programming following Markowitz.
+3. **Robust Portfolio Optimization (SOCP)**: Accounts for model uncertainty and risk aversion through **lambda (λ)** and **kappa (κ)** parameter analysis.
 
-### **3️⃣ mvo_portfolio.py** (Mean-Variance Optimization Model)
-This script implements the classical **Mean-Variance Optimization (MVO)** approach:
-- **Objective:** Minimize portfolio variance while meeting a return target.
-- **Constraints:**
-  - Portfolio weights sum to **1**
+Additionally, it includes tools to:
+- **Fetch and preprocess financial data** (using Yahoo Finance)
+- **Perform parameter sensitivity analysis**  
+- **Export results for further exploration and visualization**
+
+---
+
+## 💼 Linear Portfolio Trials
+
+### 1️⃣ MAD Model - `lp_portfolio.py`
+Implements **Mean Absolute Deviation (MAD)** portfolio optimization using **Linear Programming (LP)**.
+
+- **Objective**:  
+  Minimize the **mean absolute deviation** (MAD) of portfolio returns, offering an alternative risk measure to variance.
+  
+- **Constraints**:
+  - Fully invested (weights sum to 1)
+  - Diversification cap (no single asset > 20%)
+  - Achieve a **minimum target return** (from `target_return.txt`)
+
+- **Solver**:  
+  `PuLP`
+
+- **Output**:
+  - Optimal weights printed to terminal
+  - Results saved to:  
+    `Data/lp_optimal_weights.csv`
+
+---
+
+### 2️⃣ MVO Model - `mvo_portfolio.py`
+Implements **Markowitz Mean-Variance Optimization (MVO)** using **Quadratic Programming (QP)**.
+
+- **Objective**:  
+  Minimize **portfolio variance**, aiming for an **efficient frontier** allocation.
+
+- **Constraints**:
+  - Fully invested (weights sum to 1)
   - No short-selling (weights ≥ 0)
-  - **Uses the same target return as MAD** (from `target_return.txt`)
-- **Solver:** Uses `cvxpy` for quadratic programming.
-- **Output:** Optimal portfolio weights are:
-  - **Printed in the terminal**
-  - **Saved in `Data/mvo_optimal_weights.csv`**
+  - Minimum target return (same as MAD)
+
+- **Solver**:  
+  `cvxpy`
+
+- **Output**:
+  - Optimal weights printed to terminal  
+  - Results saved to:  
+    `Data/mvo_optimal_weights.csv`
+
+---
+
+## 🛡️ Robust Portfolio Optimization
+
+### Robust Portfolio Model - `robust_portfolio.py`
+Implements **Robust Portfolio Optimization** via **Second-Order Cone Programming (SOCP)** with **Mosek Fusion API**.
+
+- **Objective**:  
+  Considering the **worst-case scenario** in portfolio optimization with parameters:
+  - **Lambda (λ)** → risk aversion  
+  - **Kappa (κ)** → robustness to return uncertainty  
+
+- **Model Structure**:  
