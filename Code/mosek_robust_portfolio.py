@@ -98,8 +98,8 @@ df_long = df_long.sort_values(by=['lambda', 'kappa', 'Asset'])
 # === Export results to CSV ===
 df_result_csv_path = os.path.join(os.getcwd(), "portfolio_results_lambda_kappa.csv")
 df_result.to_csv(df_result_csv_path, index=False)
-print(f"✅ Wide format df_result exported to: {df_result_csv_path}")
+print(f"Wide format df_result exported to: {df_result_csv_path}")
 
 df_long_csv_path = os.path.join(os.getcwd(), "portfolio_weights_long_lambda_kappa.csv")
 df_long.to_csv(df_long_csv_path, index=False)
-print(f"✅ Long format df_long exported to: {df_long_csv_path}")
+print(f"Long format df_long exported to: {df_long_csv_path}")
